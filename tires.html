@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tire Inventory Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .brand-section {
+            margin-bottom: 50px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .brand-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-weight: bold;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .brand-info h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .brand-total {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        .tire-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .tire-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tire-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .tire-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border-color: #3498db;
+        }
+
+        .tire-info {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .tire-details h3 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .tire-part {
+            color: #7f8c8d;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .tire-type {
+            color: #3498db;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .quantity-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .qty-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .qty-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .qty-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .qty-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1f5f8b);
+            transform: scale(1.1);
+        }
+
+        .qty-btn:active {
+            transform: scale(0.95);
+        }
+
+        .qty-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            display: block;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .tire-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏁 Tire Inventory Management</h1>
+            <p>Real-time tire stock tracking and management system</p>
+        </div>
+
+        <div class="content">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number" id="bhk-total">59</span>
+                    <div class="stat-label">BHK Tires</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="cont-total">54</span>
+                    <div class="stat-label">Continental Tires</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="total-inventory">113</span>
+                    <div class="stat-label">Total Inventory</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="tire-models">42</span>
+                    <div class="stat-label">Tire Models</div>
+                </div>
+            </div>
+
+            <!-- BHK Tires Section -->
+            <div class="brand-section">
+                <div class="brand-header">
+                    <div class="brand-logo">BHK</div>
+                    <div class="brand-info">
+                        <h2>BHK Passenger Tires</h2>
+                        <div class="brand-total">17 models • <span id="bhk-display-total">59</span> units in stock</div>
+                    </div>
+                </div>
+                <div class="tire-grid" id="bhk-grid">
+                    <!-- BHK tires will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Continental Tires Section -->
+            <div class="brand-section">
+                <div class="brand-header">
+                    <div class="brand-logo">CONT</div>
+                    <div class="brand-info">
+                        <h2>Continental Tires</h2>
+                        <div class="brand-total">25 models • <span id="cont-display-total">54</span> units in stock</div>
+                    </div>
+                </div>
+                <div class="tire-grid" id="cont-grid">
+                    <!-- Continental tires will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // BHK Tire Data
+        const bhkTires = [
+            { size: "235/45R19", part: "4120164V", qty: 3.00, type: "Agility SUV" },
+            { size: "225/50R18", part: "4120177V", qty: 5.00, type: "Agility SUV" },
+            { size: "225/40R18", part: "5546240V", qty: 4.00, type: "Street-h hu01" },
+            { size: "235/50R18", part: "5546248V", qty: 3.00, type: "Street-h hu01" },
+            { size: "235/55R17", part: "5546249V", qty: 1.00, type: "Street-h hu01" },
+            { size: "215/60R16", part: "5546778V", qty: 3.00, type: "Hh11" },
+            { size: "225/60R16", part: "5546782V", qty: 2.00, type: "Hh11" },
+            { size: "205/60R16", part: "5546784V", qty: 3.00, type: "Hh11" },
+            { size: "185/65R15", part: "5546787V", qty: 4.00, type: "Hh11" },
+            { size: "235/60R17", part: "5546788V", qty: 4.00, type: "Hh11" },
+            { size: "215/55R17", part: "5546789V", qty: 6.00, type: "Hh11" },
+            { size: "215/55R17", part: "5546793V", qty: 4.00, type: "Hh11" },
+            { size: "215/50R17", part: "5546798V", qty: 4.00, type: "Hh11" },
+            { size: "235/55R18", part: "5546806V", qty: 1.00, type: "Hh11" },
+            { size: "225/45R18", part: "5546821V", qty: 4.00, type: "Hh11" },
+            { size: "235/45R18", part: "5546822V", qty: 4.00, type: "Hh11" },
+            { size: "225/45R17", part: "5546823V", qty: 4.00, type: "Hh11" }
+        ];
+
+        // Continental Tire Data
+        const contTires = [
+            { size: "245/45R18/XL", part: "03503180000", qty: 1.00, type: "Procontact SSR" },
+            { size: "225/50R17", part: "03508250000", qty: 4.00, type: "Procontact SSR" },
+            { size: "235/45R19", part: "15484960000", qty: 2.00, type: "Procontact" },
+            { size: "P205/70R16", part: "15496930000", qty: 1.00, type: "Procontact" },
+            { size: "225/65R17", part: "15499360000", qty: 2.00, type: "Procontact TX" },
+            { size: "215/45ZR17", part: "15572680000", qty: 2.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "215/45ZR18", part: "15572690000", qty: 2.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "225/40ZR18", part: "15572730000", qty: 4.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "225/45ZR17", part: "15572750000", qty: 2.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "235/40ZR19", part: "15572860000", qty: 1.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "235/50ZR18", part: "15572900000", qty: 2.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "245/40ZR19", part: "15573010000", qty: 2.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "245/45ZR17", part: "15573030000", qty: 3.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "255/35ZR19", part: "15573130000", qty: 2.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "255/40ZR19", part: "15573170000", qty: 1.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "255/45ZR18", part: "15573190000", qty: 2.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "265/35ZR19", part: "15573290000", qty: 1.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "265/35ZR20", part: "15573300000", qty: 1.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "275/45ZR19", part: "15573450000", qty: 2.00, type: "ExtremeContact DWS06 Plus" },
+            { size: "205/50R17", part: "15578310000", qty: 4.00, type: "TrueContact Tour 54" },
+            { size: "255/45R19", part: "15578540000", qty: 3.00, type: "ProContact RX L2 ContiSilent" },
+            { size: "245/45R18", part: "15578930000", qty: 1.00, type: "TrueContact Tour 54" },
+            { size: "255/45R19", part: "15579190000", qty: 2.00, type: "TrueContact Tour 54" },
+            { size: "225/45R17", part: "15580000000", qty: 4.00, type: "TrueContact Tour 54" },
+            { size: "225/60R18", part: "15580070000", qty: 4.00, type: "TrueContact Tour 54" }
+        ];
+
+        function createTireCard(tire, brand, index) {
+            return `
+                <div class="tire-card">
+                    <div class="tire-info">
+                        <div class="tire-details">
+                            <h3>${tire.size}</h3>
+                            <div class="tire-part">${tire.part}</div>
+                            <div class="tire-type">${tire.type}</div>
+                        </div>
+                        <div class="quantity-control">
+                            <div class="qty-label">QOH</div>
+                            <div class="qty-display" id="${brand}-qty-${index}">${tire.qty.toFixed(2)}</div>
+                            <div class="qty-buttons">
+                                <button class="qty-btn" onclick="updateQuantity('${brand}', ${index}, 1)">▲</button>
+                                <button class="qty-btn" onclick="updateQuantity('${brand}', ${index}, -1)" ${tire.qty <= 0 ? 'disabled' : ''}>▼</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateQuantity(brand, index, change) {
+            const tires = brand === 'bhk' ? bhkTires : contTires;
+            const tire = tires[index];
+            
+            // Update quantity (minimum 0)
+            tire.qty = Math.max(0, tire.qty + change);
+            
+            // Update display
+            document.getElementById(`${brand}-qty-${index}`).textContent = tire.qty.toFixed(2);
+            
+            // Update button states
+            const downBtn = document.querySelector(`button[onclick="updateQuantity('${brand}', ${index}, -1)"]`);
+            downBtn.disabled = tire.qty <= 0;
+            
+            // Update totals
+            updateTotals();
+        }
+
+        function updateTotals() {
+            const bhkTotal = bhkTires.reduce((sum, tire) => sum + tire.qty, 0);
+            const contTotal = contTires.reduce((sum, tire) => sum + tire.qty, 0);
+            const totalInventory = bhkTotal + contTotal;
+            
+            document.getElementById('bhk-total').textContent = Math.round(bhkTotal);
+            document.getElementById('cont-total').textContent = Math.round(contTotal);
+            document.getElementById('total-inventory').textContent = Math.round(totalInventory);
+            document.getElementById('bhk-display-total').textContent = Math.round(bhkTotal);
+            document.getElementById('cont-display-total').textContent = Math.round(contTotal);
+        }
+
+        function initializeInventory() {
+            // Populate BHK tires
+            const bhkGrid = document.getElementById('bhk-grid');
+            bhkGrid.innerHTML = bhkTires.map((tire, index) => createTireCard(tire, 'bhk', index)).join('');
+            
+            // Populate Continental tires
+            const contGrid = document.getElementById('cont-grid');
+            contGrid.innerHTML = contTires.map((tire, index) => createTireCard(tire, 'cont', index)).join('');
+            
+            // Update initial totals
+            updateTotals();
+        }
+
+        // Initialize the inventory when page loads
+        document.addEventListener('DOMContentLoaded', initializeInventory);
+    </script>
+</body>
+</html>
